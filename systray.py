@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 
@@ -14,7 +14,6 @@ class SystrayIconApp:
         self.url = spaceapi_url
         self.tray = gtk.StatusIcon()
         self.people_now_present = []
-        self.icons = {}
         self.refresh()
         self.tray.connect('popup-menu', self.on_right_click)
         self.tray.connect('button-press-event', self.on_left_click)
@@ -26,17 +25,6 @@ class SystrayIconApp:
             space = requests.get(self.url).json()
         except:
             space = {}
-
-        # Attempt to load icons from SpaceAPI into temp files
-        iconset = space.get('state', {}).get('icon', {})
-        for name, url in iconset.items():
-            if name not in self.icons:
-                r = requests.get(url)
-                _, ext = os.path.splitext(url)
-                fd, path = mkstemp(suffix=ext)
-                os.write(fd, r.content)
-                os.close(fd)
-                self.icons[name] = path
 
         is_open = space.get('state', {}).get('open', None)
         if is_open != was_open:
@@ -50,17 +38,12 @@ class SystrayIconApp:
         return True
 
     def render(self, name, is_open):
-        if is_open and 'open' in self.icons:
-            self.tray.set_from_file(self.icons['open'])
-        elif is_open is False and 'closed' in self.icons:
-            self.tray.set_from_file(self.icons['closed'])
-        else:
-            icon = gtk.STOCK_STOP
-            if is_open is True:
-                icon = gtk.STOCK_YES
-            elif is_open is False:
-                icon = gtk.STOCK_NO
-            self.tray.set_from_stock(icon)
+        icon = gtk.STOCK_STOP
+        if is_open is True:
+            icon = gtk.STOCK_YES
+        elif is_open is False:
+            icon = gtk.STOCK_NO
+        self.tray.set_from_stock(icon)
 
         if name is None:
             self.tray.set_tooltip('Connection error')
