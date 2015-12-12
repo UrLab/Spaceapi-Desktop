@@ -1,0 +1,4 @@
+gtk
+gobject
+requests
+tempfile
