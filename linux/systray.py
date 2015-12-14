@@ -100,10 +100,12 @@ class SystrayIconApp:
         about_dialog.set_destroy_with_parent(True)
         about_dialog.set_icon_name("SpaceAPI Desktop")
         about_dialog.set_name('SpaceAPI Desktop')
-        about_dialog.set_version('0.1')
-        about_dialog.set_copyright("Made at UrLab, ULB's hackerspace :: https://urlab.be/")
-        about_dialog.set_comments("A systray to display your local hackerspace status")
-        about_dialog.set_authors(['iTitou'])
+        about_dialog.set_version('0.2')
+        about_dialog.set_copyright("Made at UrLab, ULB's hackerspace")
+        about_dialog.set_website("https://github.com/urlab/spaceapi-desktop")
+        about_dialog.set_comments(
+            "A system tray icon to display your local hackerspace status")
+        about_dialog.set_authors(['iTitou', 'C4', 'infected', 'piR'])
         about_dialog.run()
         about_dialog.destroy()
 
