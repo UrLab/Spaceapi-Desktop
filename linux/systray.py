@@ -107,13 +107,7 @@ class SystrayIconApp:
         about_dialog.run()
         about_dialog.destroy()
 
-if __name__ == "__main__":
-    from sys import argv
 
-    if len(argv) < 2:
-        print("USAGE: {} SPACEAPI_URL [ REFRESH_RATE (in seconds) ]".format(
-            argv[0]))
-    else:
-        refresh_rate = 60 if len(argv) < 3 else int(argv[2])
-        SystrayIconApp(argv[1], refresh_rate_seconds=refresh_rate)
-        gtk.main()
+def main(url, refresh_rate):
+    SystrayIconApp(url, refresh_rate)
+    gtk.main()

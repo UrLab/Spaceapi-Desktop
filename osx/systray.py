@@ -7,10 +7,9 @@ import requests
 
 
 class SystrayIconApp(rumps.App):
-
-    def __init__(self, title, spaceapiUrl, refresh_rate):
+    def __init__(self, title, spaceapi_url, refresh_rate):
         super(SystrayIconApp, self).__init__(title)
-        self._spaceapiUrl = spaceapiUrl
+        self._spaceapi_url = spaceapi_url
         self.people_now_present = []
         self.is_open = None
         self.timer = rumps.Timer(self._refresh, refresh_rate)
@@ -28,9 +27,9 @@ class SystrayIconApp(rumps.App):
 
     def _refresh(self, trash):
         was_open = self.is_open
-        space = requests.get(self._spaceapiUrl).json()
+        space = requests.get(self._spaceapi_url).json()
         try:
-            space = requests.get(self._spaceapiUrl).json()
+            space = requests.get(self._spaceapi_url).json()
         except:
             space = {}
         is_open = space.get('state', {}).get('open', None)
@@ -40,18 +39,11 @@ class SystrayIconApp(rumps.App):
         self.is_open = is_open
 
         try:
-            self.people_now_present = space['sensors']['people_now_present'][0]['names']
+            people_sensor = space['sensors']['people_now_present'][0]
+            self.people_now_present = people_sensor['names']
         except:
             self.people_now_present = []
 
 
-if __name__ == "__main__":
-    from sys import argv
-
-    if len(argv) < 2:
-        print("USAGE: {} SPACEAPI_URL [ REFRESH_RATE (in seconds) ]".format(
-            argv[0]))
-    else:
-        refresh_rate = 120 if len(argv) < 3 else int(argv[2])
-        sia = SystrayIconApp("UrLaB:fetching...", argv[1], refresh_rate)
-        sia.run()
+def main(url, refresh_rate):
+    SystrayIconApp("UrLaB:fetching...", url, refresh_rate).run()
