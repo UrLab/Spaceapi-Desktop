@@ -33,6 +33,12 @@ class SystrayIconApp:
             self.people_now_present = space['sensors']['people_now_present'][0]['names']
         except:
             self.people_now_present = []
+
+        try:
+            self.people_count = int(space['sensors']['people_now_present'][0]['value'])
+        except:
+            self.people_count = len(self.people_now_present)
+
         return True
 
     def render(self, name, is_open):
@@ -56,6 +62,15 @@ class SystrayIconApp:
 
         for people in self.people_now_present:
             item = gtk.MenuItem(people)
+            item.show()
+            menu.append(item)
+
+        hidden = self.people_count - len(self.people_now_present)
+        if hidden > 0:
+            text = "%i other" % hidden
+            if hidden > 1:
+                text += "s"
+            item = gtk.MenuItem(text)
             item.show()
             menu.append(item)
 
