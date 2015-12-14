@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-import os
 import gtk
 import gobject
 import requests
-from tempfile import mkstemp
 
 
 class SystrayIconApp:
