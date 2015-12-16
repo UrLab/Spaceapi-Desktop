@@ -30,7 +30,7 @@ class SystrayIconApp:
         self.is_open = is_open
 
         try:
-            self.people_now_present = space['sensors']['people_now_present'][0]['names']
+            self.people_now_present = sorted(space['sensors']['people_now_present'][0]['names'])
         except:
             self.people_now_present = []
 
