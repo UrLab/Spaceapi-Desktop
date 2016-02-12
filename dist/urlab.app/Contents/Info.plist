@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>urlab-app</string>
+	<string>UrLab</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -20,15 +20,15 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>urlab-app</string>
+	<string>UrLab</string>
 	<key>CFBundleIconFile</key>
 	<string>spaceinv.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.pythonmac.unspecified.urlab-app</string>
+	<string>org.pythonmac.unspecified.UrLab</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>urlab-app</string>
+	<string>UrLab</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -54,7 +54,7 @@
 	<key>PyOptions</key>
 	<dict>
 		<key>alias</key>
-		<true/>
+		<false/>
 		<key>argv_emulation</key>
 		<true/>
 		<key>emulate_shell_environment</key>
@@ -92,7 +92,7 @@
 		<key>py2app</key>
 		<dict>
 			<key>alias</key>
-			<true/>
+			<false/>
 			<key>template</key>
 			<string>app</string>
 			<key>version</key>

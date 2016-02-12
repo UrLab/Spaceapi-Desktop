@@ -55,42 +55,6 @@ def _fixup_virtualenv(real_prefix):
 
 _fixup_virtualenv('/System/Library/Frameworks/Python.framework/Versions/2.7')
 
-def _site_packages(prefix, real_prefix, global_site_packages):
-    import site, sys, os
-    paths = []
-    prefixes = [sys.prefix]
-
-    paths.append(os.path.join(prefix, 'lib', 'python' + sys.version[:3],
-        'site-packages'))
-    if os.path.join('.framework', '') in os.path.join(prefix, ''):
-        home = os.environ.get('HOME')
-        if home:
-            paths.append(os.path.join(home, 'Library', 'Python',
-                sys.version[:3], 'site-packages'))
-
-
-    # Work around for a misfeature in setuptools: easy_install.pth places
-    # site-packages way to early on sys.path and that breaks py2app bundles.
-    # NOTE: this is hacks into an undocumented feature of setuptools and
-    # might stop to work without warning.
-    sys.__egginsert = len(sys.path)
-
-    for path in paths:
-        site.addsitedir(path)
-
-
-    # Ensure that the global site packages get placed on sys.path after
-    # the site packages from the virtual environment (this functionality
-    # is also in virtualenv)
-    sys.__egginsert = len(sys.path)
-
-    if global_site_packages:
-        site.addsitedir(os.path.join(real_prefix, 'lib', 'python' + sys.version[:3],
-            'site-packages'))
-
-
-_site_packages('/Users/pierre/Workspace/Spaceapi-Desktop/osx/ve', '/System/Library/Frameworks/Python.framework/Versions/2.7', 0)
-
 """ Add Apple's additional packages to sys.path """
 def add_system_python_extras():
     import site, sys
@@ -382,22 +346,13 @@ def _chdir_resource():
 _chdir_resource()
 
 
-def _setup_ctypes():
-    from ctypes.macholib import dyld
-    import os
-    frameworks = os.path.join(os.environ['RESOURCEPATH'], '..', 'Frameworks')
-    dyld.DEFAULT_FRAMEWORK_FALLBACK.insert(0, frameworks)
-    dyld.DEFAULT_LIBRARY_FALLBACK.insert(0, frameworks)
-
-_setup_ctypes()
-
-
-def _path_inject(paths):
-    import sys
-    sys.path[:0] = paths
-
-
-_path_inject(['/Users/pierre/Workspace/Spaceapi-Desktop'])
+def _disable_linecache():
+    import linecache
+    def fake_getline(*args, **kwargs):
+        return ''
+    linecache.orig_getline = linecache.getline
+    linecache.getline = fake_getline
+_disable_linecache()
 
 
 import re, sys
@@ -421,27 +376,35 @@ def _run():
     global __file__
     import os, site
     sys.frozen = 'macosx_app'
+    base = os.environ['RESOURCEPATH']
 
     argv0 = os.path.basename(os.environ['ARGVZERO'])
     script = SCRIPT_MAP.get(argv0, DEFAULT_SCRIPT)
 
-    sys.argv[0] = __file__ = script
+    path = os.path.join(base, script)
+    sys.argv[0] = __file__ = path
     if sys.version_info[0] == 2:
-        with open(script, 'rU') as fp:
+        with open(path, 'rU') as fp:
             source = fp.read() + "\n"
     else:
-        with open(script, 'rb') as fp:
+        with open(path, 'rb') as fp:
             encoding = guess_encoding(fp)
 
-        with open(script, 'r', encoding=encoding) as fp:
+        with open(path, 'r', encoding=encoding) as fp:
             source = fp.read() + '\n'
+    exec(compile(source, path, 'exec'), globals(), globals())
 
-    exec(compile(source, script, 'exec'), globals(), globals())
+
+def _setup_ctypes():
+    from ctypes.macholib import dyld
+    import os
+    frameworks = os.path.join(os.environ['RESOURCEPATH'], '..', 'Frameworks')
+    dyld.DEFAULT_FRAMEWORK_FALLBACK.insert(0, frameworks)
+    dyld.DEFAULT_LIBRARY_FALLBACK.insert(0, frameworks)
+
+_setup_ctypes()
 
 
-DEFAULT_SCRIPT='/Users/pierre/Workspace/Spaceapi-Desktop/urlab-app.py'
+DEFAULT_SCRIPT='UrLab.py'
 SCRIPT_MAP={}
-try:
-    _run()
-except KeyboardInterrupt:
-    pass
+_run()
